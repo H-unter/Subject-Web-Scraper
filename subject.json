@@ -1,0 +1,21 @@
+{
+    "Subject code": "EE2201",
+    "Full name": "Circuit Theory",
+    "Prerequisites": "EG1012 and MA2000. Allow concurrent enrolment for MA2000.",
+    "Description": "AC circuit theorems and network analysis. Sinusoids and phasors. Frequency response, transfer function, stability, Bode diagrams, locus diagrams, resonance. Two port networks. The Laplace transform, transient analysis using the Laplace transform.",
+    "Learning_outcomes": "to demonstrate competence in the application of available techniques including mesh and nodal analysis; circuit reduction techniques; frequency response characteristics; two-port network parameters; transient analysis",
+    "Assessment": [
+        {
+            "title": "Written > Examination (centrally administered) - (60%) - Individual",
+            "percent_weighting": 60
+        },
+        {
+            "title": "Written > Examination - In class - (15%) - Individual",
+            "percent_weighting": 15
+        },
+        {
+            "title": "On-course assessment: Consisting of two assignments worth 10% each and Practicals worth 5% - (25%) - Individual",
+            "percent_weighting": 25
+        }
+    ]
+}
