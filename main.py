@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import json
 
+PUNCTUATION = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+
 
 def main():
     file_path = 'Subject Search.html'
@@ -9,7 +11,7 @@ def main():
         subject_data = parse_subject_data(file_contents)
         write_to_json(subject_data, 'subject.json')
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred parsing subject data: {e}")
 
 
 def read_file(file_path):
@@ -21,16 +23,20 @@ def read_file(file_path):
 def parse_subject_data(file_contents):
     """Parse key subject data."""
     page = BeautifulSoup(file_contents, 'html.parser')
+    prerequisites_string = extract_prerequisite_string(page)
     return {
-        'code': extract_subject_code(page),  # EE2201
-        'full_name': extract_full_name(page),  # Circuit Theory
-        'prerequisites': extract_prerequisites(page),  # EG1012 and MA2000. Allow concurrent enrolment for MA2000.
-        'description': extract_description(page),
-        # AC circuit theorems and network analysis. Sinusoids and phasors. Frequency response...
-        'learning_outcomes': extract_learning_outcomes(page),
-        # to demonstrate competence in the application of available techniques including mesh and nodal analysis; circuit
-        'assessment': extract_assessment(page)
-    }
+        extract_subject_code(page): {
+            'name': extract_name(page),  # Circuit Theory
+            'prerequisites_string': prerequisites_string,  # EG1012 and MA2000. Allow concurrent enrolment for MA2000.
+            'prerequisites_subjects': extract_prerequisite_subjects(prerequisites_string),  # ['EG1012','MA2000']
+            'description': extract_description(page),
+            # AC circuit theorems and network analysis. Sinusoids and phasors. Frequency response...
+            'learning_outcomes': extract_learning_outcomes(page),
+            # to demonstrate competence in the application of available techniques including mesh and nodal analysis; circuit
+            'availabilities' : extract_availabilities(page),
+
+            'assessment': extract_assessment(page)
+        }}
 
 
 def extract_subject_code(page):
@@ -39,13 +45,13 @@ def extract_subject_code(page):
     return element.get_text(strip=True).split(" - ")[0] if element else None
 
 
-def extract_full_name(page):
+def extract_name(page):
     """Extracts and returns subjects name string from html page"""
     element = page.find('h2')
     return element.get_text(strip=True).split(" - ")[1] if element else None
 
 
-def extract_prerequisites(page):
+def extract_prerequisite_string(page):
     """Extracts and returns subjects prerequisite list string from html page"""
     # Find all 'th' elements and iterate over them to find one that contains 'Prerequisites'
     for th in page.find_all('th'):
@@ -56,6 +62,17 @@ def extract_prerequisites(page):
                 return clean_text(prerequisites_td.get_text(strip=True))
             break  # Exit the loop once the correct 'th' is processed
     return None  # Return None if prerequisites are not found
+
+
+def extract_prerequisite_subjects(string):
+    """Return list of subjects given an input string"""
+    string = ''.join(char for char in string if char not in PUNCTUATION)
+    subjects = set()
+    words = string.split()
+    for word in words:
+        if len(word) == 6 and word[0:1].isupper() and word[2:5].isnumeric():
+            subjects.add(word)
+    return list(subjects)
 
 
 def extract_description(page):
@@ -71,7 +88,8 @@ def extract_learning_outcomes(page):
 
 
 def extract_assessment(page):
-    """Extracts and returns nested list of dictionaries containing assesment title and weighting for each assesment peicefrom html page"""
+    """Extracts and returns nested list of dictionaries containing assesment title and weighting for each assesment
+    peicefrom html page"""
     element = page.find('h3', string='Subject Assessment')
     if element:
         ul = element.find_next_sibling('ul')
@@ -85,6 +103,10 @@ def parse_assessment_item(li):
     percent = int(''.join(filter(str.isdigit, text.split('(')[-1]))) if '(' in text else None
     return {'title': clean_text(text), 'percent_weighting': percent}
 
+def extract_availabilities(page):
+    """Extract the subject availabilities."""
+    availability_divs = page.find_all('div', class_='StyledBox-sc-13pk1d4-0 kcFExs')
+    return [clean_text(div.get_text(strip=True)) for div in availability_divs]
 
 def clean_text(text):
     """Clean up text"""
