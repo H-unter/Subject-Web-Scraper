@@ -10,8 +10,8 @@ def main():
         file_contents = read_file(file_path)
         subject_data = parse_subject_data(file_contents)
         write_to_json(subject_data, 'subject.json')
-    except Exception as e:
-        print(f"An error occurred parsing subject data: {e}")
+    except Exception as exception:
+        print(f"An error occurred parsing subject data: {exception}")
 
 
 def read_file(file_path):
@@ -26,15 +26,12 @@ def parse_subject_data(file_contents):
     prerequisites_string = extract_prerequisite_string(page)
     return {
         extract_subject_code(page): {
-            'name': extract_name(page),  # Circuit Theory
-            'prerequisites_string': prerequisites_string,  # EG1012 and MA2000. Allow concurrent enrolment for MA2000.
-            'prerequisites_subjects': extract_prerequisite_subjects(prerequisites_string),  # ['EG1012','MA2000']
+            'name': extract_name(page),
+            'prerequisites_string': prerequisites_string,
+            'prerequisites_subjects': extract_prerequisite_subjects(prerequisites_string),
             'description': extract_description(page),
-            # AC circuit theorems and network analysis. Sinusoids and phasors. Frequency response...
             'learning_outcomes': extract_learning_outcomes(page),
-            # to demonstrate competence in the application of available techniques including mesh and nodal analysis; circuit
             'availabilities' : extract_availabilities(page),
-
             'assessment': extract_assessment(page)
         }}
 
