@@ -23,15 +23,21 @@ def read_file(file_path):
 def parse_subject_data(file_contents):
     """Parse key subject data."""
     page = BeautifulSoup(file_contents, 'html.parser')
+    college = extract_college(page)
+    if not college:
+        print('College not found')
+    elif college != 'College of Science and Engineering':
+        print('irrelevant subject alert!')
     prerequisites_string = extract_prerequisite_string(page)
     return {
         extract_subject_code(page): {
             'name': extract_name(page),
+            'college': college,
             'prerequisites_string': prerequisites_string,
             'prerequisites_subjects': extract_prerequisite_subjects(prerequisites_string),
             'description': extract_description(page),
             'learning_outcomes': extract_learning_outcomes(page),
-            'availabilities' : extract_availabilities(page),
+            'availabilities': extract_availabilities(page),
             'assessment': extract_assessment(page)
         }}
 
@@ -46,6 +52,12 @@ def extract_name(page):
     """Extracts and returns subjects name string from html page"""
     element = page.find('h2')
     return element.get_text(strip=True).split(" - ")[1] if element else None
+
+
+def extract_college(page):
+    """Extracts and returns the college who administers the subject"""
+    element = page.find('th', string='Administered by:')
+    return clean_text(element.find_next_sibling('td').get_text(strip=True)) if element else None
 
 
 def extract_prerequisite_string(page):
@@ -100,10 +112,12 @@ def parse_assessment_item(li):
     percent = int(''.join(filter(str.isdigit, text.split('(')[-1]))) if '(' in text else None
     return {'title': clean_text(text), 'percent_weighting': percent}
 
+
 def extract_availabilities(page):
     """Extract the subject availabilities."""
     availability_divs = page.find_all('div', class_='StyledBox-sc-13pk1d4-0 kcFExs')
     return [clean_text(div.get_text(strip=True)) for div in availability_divs]
+
 
 def clean_text(text):
     """Clean up text"""

@@ -1,6 +1,7 @@
 {
     "EE2201": {
         "name": "Circuit Theory",
+        "college": "College of Science and Engineering",
         "prerequisites_string": "EG1012 and MA2000. Allow concurrent enrolment for MA2000.",
         "prerequisites_subjects": [
             "MA2000",
