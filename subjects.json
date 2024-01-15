@@ -1,0 +1,65 @@
+{
+    "EE2201": {
+        "name": "Circuit Theory",
+        "college": "College of Science and Engineering",
+        "prerequisites_string": "EG1012 and MA2000. Allow concurrent enrolment for MA2000.",
+        "prerequisites_subjects": [
+            "MA2000",
+            "EG1012"
+        ],
+        "description": "AC circuit theorems and network analysis. Sinusoids and phasors. Frequency response, transfer function, stability, Bode diagrams, locus diagrams, resonance. Two port networks. The Laplace transform, transient analysis using the Laplace transform.",
+        "learning_outcomes": "to demonstrate competence in the application of available techniques including mesh and nodal analysis; circuit reduction techniques; frequency response characteristics; two-port network parameters; transient analysis",
+        "availabilities": [
+            "Cairns Nguma-bada, Study Period 1, Internal",
+            "JCU Singapore, Study Period 51, Internal",
+            "JCU Singapore, Trimester 3, Internal",
+            "Townsville Bebegu Yumba, Study Period 1, Internal"
+        ],
+        "assessment": [
+            {
+                "title": "Written > Examination (centrally administered) - (60%) - Individual",
+                "percent_weighting": 60
+            },
+            {
+                "title": "Written > Examination - In class - (15%) - Individual",
+                "percent_weighting": 15
+            },
+            {
+                "title": "On-course assessment: Consisting of two assignments worth 10% each and Practicals worth 5% - (25%) - Individual",
+                "percent_weighting": 25
+            }
+        ]
+    },
+    "EE3300": {
+        "name": "Electronics 2",
+        "college": "College of Science and Engineering",
+        "prerequisites_string": "EE2300 OR ADMITTANCE INTO MASTERS OF ENGINEERING (PROF)",
+        "prerequisites_subjects": [
+            "EE2300"
+        ],
+        "description": "Tuned amplifiers and oscillators. Power supplies: linear and switched mode. Large signal and power amplifiers (Class A, B, C, D). Feedback, frequency compensation of operational amplifier circuits. Practical operational amplifier circuits. Electronic multipliers and comparators. Planning, managing and implementing a Group Design Project.",
+        "learning_outcomes": "ability to plan, manage and implement a group project to meet set milestones, budget and performance specificationsto develop an understanding of the principles and constraints of designing electronic circuitsto develop the capability to design regulated power supplies, oscillators and amplifiersto write design proposals, a design report and present a seminar on an electronic design project",
+        "availabilities": [
+            "Cairns Nguma-bada, Study Period 1, Internal",
+            "Townsville Bebegu Yumba, Study Period 1, Internal"
+        ],
+        "assessment": [
+            {
+                "title": "Written > Examination (centrally administered) - (50%) - Individual",
+                "percent_weighting": 50
+            },
+            {
+                "title": "Written > Test/Quiz 1 - (10%) - Individual",
+                "percent_weighting": 10
+            },
+            {
+                "title": "Written > Case study analysis - (25%) - Individual",
+                "percent_weighting": 25
+            },
+            {
+                "title": "Performance/Practice/Product > Practical assessment/practical skills demonstration - (15%) - Individual",
+                "percent_weighting": 15
+            }
+        ]
+    }
+}

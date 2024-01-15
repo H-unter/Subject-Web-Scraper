@@ -5,23 +5,37 @@ PUNCTUATION = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
 
 
 def main():
-    file_path = 'Subject Search.html'
+    html_file_path = 'Subject SearchEE3300.html'
+    parsed_data_path = 'subjects.json'
     try:
-        file_contents = read_file(file_path)
-        subject_data = parse_subject_data(file_contents)
-        write_to_json(subject_data, 'subject.json')
+        subject_data = read_json_file(parsed_data_path)
+        file_contents = read_html_file(html_file_path)
+        subject_data = parse_subject_data(subject_data, file_contents)
+        write_to_json(subject_data, parsed_data_path)
     except Exception as exception:
         print(f"An error occurred parsing subject data: {exception}")
 
 
-def read_file(file_path):
+def read_json_file(file_path):
+    """Read and return the contents of a file."""
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return json.load(file)
+
+
+def read_html_file(file_path):
     """Read and return the contents of a file."""
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.read()
 
 
-def parse_subject_data(file_contents):
-    """Parse key subject data."""
+def write_to_json(data, filename):
+    """Write data to a JSON file"""
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+
+def parse_subject_data(subject_data, file_contents):
+    """Parse key subject data and update the json file accordingly."""
     page = BeautifulSoup(file_contents, 'html.parser')
     college = extract_college(page)
     if not college:
@@ -29,17 +43,17 @@ def parse_subject_data(file_contents):
     elif college != 'College of Science and Engineering':
         print('irrelevant subject alert!')
     prerequisites_string = extract_prerequisite_string(page)
-    return {
-        extract_subject_code(page): {
-            'name': extract_name(page),
-            'college': college,
-            'prerequisites_string': prerequisites_string,
-            'prerequisites_subjects': extract_prerequisite_subjects(prerequisites_string),
-            'description': extract_description(page),
-            'learning_outcomes': extract_learning_outcomes(page),
-            'availabilities': extract_availabilities(page),
-            'assessment': extract_assessment(page)
-        }}
+    subject_data[extract_subject_code(page)] = {
+        'name': extract_name(page),
+        'college': college,
+        'prerequisites_string': prerequisites_string,
+        'prerequisites_subjects': extract_prerequisite_subjects(prerequisites_string),
+        'description': extract_description(page),
+        'learning_outcomes': extract_learning_outcomes(page),
+        'availabilities': extract_availabilities(page),
+        'assessment': extract_assessment(page)
+    }
+    return subject_data
 
 
 def extract_subject_code(page):
@@ -122,12 +136,6 @@ def extract_availabilities(page):
 def clean_text(text):
     """Clean up text"""
     return ' '.join(text.split())
-
-
-def write_to_json(data, filename):
-    """Write data to a JSON file"""
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
 
 
 if __name__ == "__main__":
