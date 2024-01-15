@@ -4,8 +4,8 @@
         "college": "College of Science and Engineering",
         "prerequisites_string": "EG1012 and MA2000. Allow concurrent enrolment for MA2000.",
         "prerequisites_subjects": [
-            "MA2000",
-            "EG1012"
+            "EG1012",
+            "MA2000"
         ],
         "description": "AC circuit theorems and network analysis. Sinusoids and phasors. Frequency response, transfer function, stability, Bode diagrams, locus diagrams, resonance. Two port networks. The Laplace transform, transient analysis using the Laplace transform.",
         "learning_outcomes": "to demonstrate competence in the application of available techniques including mesh and nodal analysis; circuit reduction techniques; frequency response characteristics; two-port network parameters; transient analysis",
@@ -59,6 +59,103 @@
             {
                 "title": "Performance/Practice/Product > Practical assessment/practical skills demonstration - (15%) - Individual",
                 "percent_weighting": 15
+            }
+        ]
+    },
+    "EG3000": {
+        "name": "Introduction to Systems Engineering and Project Management",
+        "college": "College of Science and Engineering",
+        "prerequisites_string": "EG1000 AND EG1002 AND EG1010 AND EG1011 AND EG1012 AND MA1000 AND MA1003 AND (PH1005 OR EG1001) OR 36 CREDIT POINTS",
+        "prerequisites_subjects": [
+            "EG1010",
+            "EG1011",
+            "PH1005",
+            "MA1003",
+            "EG1002",
+            "MA1000",
+            "EG1001",
+            "EG1000",
+            "EG1012"
+        ],
+        "description": "This subject introduces Systems Engineering and Project Management as applicable to contemporary engineering projects. Systems Engineering is a rigorous, repeatable and methodical approach to solving the complex technical problems often encountered in industry and beyond. The approach starts with an identification of a problem and the need for a new or improved system to be developed. This problem is explored and understood before the requirements for the new or improved system are to be developed and then analysed and articulated clearly. Potential solutions to the problem are then identified and evaluated against the requirements before a preferred solution is selected for subsequent design and development. Systems Engineering is a multi-disciplinary and collaborative approach to engineering and aims to develop solutions that not only meet requirements but are also balanced across the entire system lifecycle (including production, utilisation, support and disposal phases). Systems Engineering also closely links and integrates with non-technical disciplines and in particular Project Management. Project Management methodology and tools and techniques are explored through project life cycle and phases; activity networks; time management; cost management; physical resource management; quality management; contract management; project monitoring, information and control systems and sustainable practices",
+        "learning_outcomes": "communicate effectively, including written and oral and other forms, in a professional environmentcompare approaches and concepts in a range of engineering management problems including dealing with complexity and uncertaintycombine sustainable practices while planning, designing and managing projectsmanage professional and ethical responsibilities and abide by them while delivering projectsexamine various systems engineering and project management tools and concepts for performance evaluation, auditing and successful delivery of projectsdefine a scope, develop a Work Breakdown Structure, identify resources, produce cost estimate and budgeting for a projectidentify risks by using risk analysis techniques, assess their effects on a project scope and timeline and implement appropriate intervention plans",
+        "availabilities": [
+            "Cairns Nguma-bada, Study Period 1, Internal",
+            "Townsville Bebegu Yumba, Study Period 1, Internal"
+        ],
+        "assessment": [
+            {
+                "title": "Written > Examination (centrally administered) - (40%) - Individual",
+                "percent_weighting": 40
+            },
+            {
+                "title": "Written > Test/Quiz 1 - (15%) - Individual",
+                "percent_weighting": 15
+            },
+            {
+                "title": "Written > Project report - (45%) - Individual",
+                "percent_weighting": 45
+            }
+        ]
+    },
+    "MA2000": {
+        "name": "Mathematics for Scientists and Engineers",
+        "college": "College of Science and Engineering",
+        "prerequisites_string": "MA1003",
+        "prerequisites_subjects": [
+            "MA1003"
+        ],
+        "description": "Statistics, partial derivatives; line integrals, multiple integration, vector calculus; revision of ordinary differential equations, Fourier series, Laplace transforms; partial differential equations; matrix algebra and eigenvalue problems.",
+        "learning_outcomes": "introduction to topics in geometry, vector calculus, differential equations and linear algebra with emphasis on their implementation in engineering applicationsto develop and exercise skill in developing models of physical phenomena and to become familiar with standard techniques for solving associated mathematical problems",
+        "availabilities": [
+            "Cairns Nguma-bada, Study Period 1, Internal",
+            "JCU Singapore, Study Period 51, Internal",
+            "JCU Singapore, Trimester 3, Internal",
+            "Townsville Bebegu Yumba, Study Period 1, Internal"
+        ],
+        "assessment": [
+            {
+                "title": "Written > Examination (centrally administered) - (60%) - Individual",
+                "percent_weighting": 60
+            },
+            {
+                "title": "Written > Examination - In class - (40%) - Individual",
+                "percent_weighting": 40
+            }
+        ]
+    },
+    "PH1005": {
+        "name": "Advanced Stream Physics 1",
+        "college": "College of Science and Engineering",
+        "prerequisites_string": "Maths B or MA1020 or MA0020 or MA1000 or MA1008 OR admission to 116209, 116409 or 116309. Allow concurrent for MA1000 and MA1008",
+        "prerequisites_subjects": [
+            "MA0020",
+            "MA1020",
+            "MA1008",
+            "MA1000"
+        ],
+        "description": "This calculus-based subject covers topics in mechanics which forms the basis for further studies in engineering (statics and dynamics) as well as physics. This subject will cover experimental data analysis, vectors, kinematics, projectile motion, Newtonian mechanics, kinetic energy, potential energy and work, conservation of energy, centre-of-mass and momentum, conservation of momentum for systems of particles, rotational kinematics and dynamics.",
+        "learning_outcomes": "translate, comprehend, or interpret the information in a word problem while deciding on the relevant principles and diagrams necessary to solve fundamental problems in mechanicsselect, identify, and use the appropriate data and physics principles to complete a problem or task, including the manipulation of mathematical entities to solve fundamental problems in mechanicsrecognize information, concepts, and principles of fundamental mechanics, including the correct use of physics terminology and definitionsintegrate and analyse experimental data using mathematical techniques in order to interpret experimental or observational data",
+        "availabilities": [
+            "Cairns Nguma-bada, Study Period 1, Internal",
+            "Townsville Bebegu Yumba, Study Period 1, Internal"
+        ],
+        "assessment": [
+            {
+                "title": "Written > Examination (centrally administered) - (50%) - Individual",
+                "percent_weighting": 50
+            },
+            {
+                "title": "Written > Test/Quiz 1 - (20%) - Individual",
+                "percent_weighting": 20
+            },
+            {
+                "title": "Written > Log/logbook - (20%) - Individual",
+                "percent_weighting": 20
+            },
+            {
+                "title": "Written > Problem task - (10%) - Individual",
+                "percent_weighting": 10
             }
         ]
     }

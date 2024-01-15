@@ -1,3 +1,7 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import json
 
@@ -5,11 +9,13 @@ PUNCTUATION = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
 
 
 def main():
-    html_file_path = 'Subject SearchEE3300.html'
+    html_local_file_path = 'Subject SearchEE3300.html'
+    url = 'https://apps.jcu.edu.au/subjectsearch/#/subject/2024/PH1005'
     parsed_data_path = 'subjects.json'
     try:
         subject_data = read_json_file(parsed_data_path)
-        file_contents = read_html_file(html_file_path)
+        # file_contents = read_local_html_file(html_local_file_path) # local
+        file_contents = fetch_html_file(url)  # from url
         subject_data = parse_subject_data(subject_data, file_contents)
         write_to_json(subject_data, parsed_data_path)
     except Exception as exception:
@@ -22,7 +28,22 @@ def read_json_file(file_path):
         return json.load(file)
 
 
-def read_html_file(file_path):
+def fetch_html_file(url):
+    """Fetch html file from url"""
+    driver = webdriver.Chrome()  # Ensure chromedriver is in PATH or provide the path
+    try:
+        driver.get(url)
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div.StyledBox-sc-13pk1d4-0.gpfScO"))
+        )
+        html_content = driver.page_source
+        driver.quit()
+    except Exception as exception:
+        print(f"Error in fetching html content: {exception}")
+    return html_content
+
+
+def read_local_html_file(file_path):
     """Read and return the contents of a file."""
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.read()
