@@ -1,5 +1,14 @@
 # Subject Web Scraper
-Did this because I thought it would be fun to do, not for any real application.
+Did this because I thought it would be fun - not for any real application.
+
+## Files
+ - `main.py` the python app that did all the data gathering
+ - `subjects.json` the output
+ - `subject_codes.txt` list of *all* subject codes
+ - `cse_subject_codes.txt` list of all *college of science and engineering* subject codes
+
+
+## Info
 
 The data was scraped from [JCU Subject Search](https://apps.jcu.edu.au/subjectsearch/#/subjectlist/2024/ug)
 
