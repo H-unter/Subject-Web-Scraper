@@ -9,23 +9,35 @@ PUNCTUATION = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
 
 
 def main():
-    html_local_file_path = 'Subject SearchEE3300.html'
-    url = 'https://apps.jcu.edu.au/subjectsearch/#/subject/2024/PH1005'
+    base_url = 'https://apps.jcu.edu.au/subjectsearch/#/subject/2024/'
     parsed_data_path = 'subjects.json'
-    try:
-        subject_data = read_json_file(parsed_data_path)
-        # file_contents = read_local_html_file(html_local_file_path) # local
-        file_contents = fetch_html_file(url)  # from url
-        subject_data = parse_subject_data(subject_data, file_contents)
-        write_to_json(subject_data, parsed_data_path)
-    except Exception as exception:
-        print(f"An error occurred parsing subject data: {exception}")
+    # try:
+    subject_codes = read_subject_codes_from_file('cse_subject_codes.txt')
+    print(subject_codes)
+    subject_data = read_json_file(parsed_data_path)
+    for subject_code in subject_codes:
+        if subject_code in subject_data.keys():
+            print(f'{subject_code} already in {parsed_data_path}')
+        else:
+            subject_url = ''.join([base_url,subject_code])
+            file_contents = fetch_html_file(subject_url)  # from url
+            print(f'Fetched file contents of {subject_code}')
+            subject_data = parse_subject_data(subject_data, file_contents)
+            print(f'Parsed file contents of {subject_code}')
+    write_to_json(subject_data, parsed_data_path)
+    # except Exception as exception:
+    #     print(f"An error occurred parsing subject data: {exception}")
 
 
 def read_json_file(file_path):
     """Read and return the contents of a file."""
     with open(file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
+
+def read_subject_codes_from_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        subject_codes = file.read().splitlines()
+    return subject_codes
 
 
 def fetch_html_file(url):
@@ -110,13 +122,17 @@ def extract_prerequisite_string(page):
 
 def extract_prerequisite_subjects(string):
     """Return list of subjects given an input string"""
-    string = ''.join(char for char in string if char not in PUNCTUATION)
-    subjects = set()
-    words = string.split()
-    for word in words:
-        if len(word) == 6 and word[0:1].isupper() and word[2:5].isnumeric():
-            subjects.add(word)
-    return list(subjects)
+    try:
+        string = ''.join(char for char in string if char not in PUNCTUATION)
+        subjects = set()
+        words = string.split()
+        for word in words:
+            if len(word) == 6 and word[0:1].isupper() and word[2:5].isnumeric():
+                subjects.add(word)
+        return list(subjects)
+    except:
+        print("No prerequisites found")
+        return []
 
 
 def extract_description(page):
