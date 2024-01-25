@@ -19,20 +19,19 @@ def main():
         if subject_code in subject_data.keys():
             print(f'{subject_code} already in {parsed_data_path}')
         else:
-            subject_url = ''.join([base_url,subject_code])
+            subject_url = ''.join([base_url, subject_code])
             file_contents = fetch_html_file(subject_url)  # from url
             print(f'Fetched file contents of {subject_code}')
             subject_data = parse_subject_data(subject_data, file_contents)
             print(f'Parsed file contents of {subject_code}')
     write_to_json(subject_data, parsed_data_path)
-    # except Exception as exception:
-    #     print(f"An error occurred parsing subject data: {exception}")
 
 
 def read_json_file(file_path):
     """Read and return the contents of a file."""
     with open(file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
+
 
 def read_subject_codes_from_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -69,6 +68,7 @@ def write_to_json(data, filename):
 
 def parse_subject_data(subject_data, file_contents):
     """Parse key subject data and update the json file accordingly."""
+    code = extract_subject_code(page)
     page = BeautifulSoup(file_contents, 'html.parser')
     college = extract_college(page)
     if not college:
@@ -76,11 +76,11 @@ def parse_subject_data(subject_data, file_contents):
     elif college != 'College of Science and Engineering':
         print('irrelevant subject alert!')
     prerequisites_string = extract_prerequisite_string(page)
-    subject_data[extract_subject_code(page)] = {
+    subject_data[code] = {
         'name': extract_name(page),
         'college': college,
         'prerequisites_string': prerequisites_string,
-        'prerequisites_subjects': extract_prerequisite_subjects(prerequisites_string),
+        'prerequisites_subjects': extract_prerequisite_subjects(prerequisites_string, code),
         'description': extract_description(page),
         'learning_outcomes': extract_learning_outcomes(page),
         'availabilities': extract_availabilities(page),
@@ -120,7 +120,7 @@ def extract_prerequisite_string(page):
     return None  # Return None if prerequisites are not found
 
 
-def extract_prerequisite_subjects(string):
+def extract_prerequisite_subjects(string, code):
     """Return list of subjects given an input string"""
     try:
         string = ''.join(char for char in string if char not in PUNCTUATION)
@@ -131,7 +131,7 @@ def extract_prerequisite_subjects(string):
                 subjects.add(word)
         return list(subjects)
     except:
-        print("No prerequisites found")
+        print(f"No prerequisites found for {code}")
         return []
 
 
