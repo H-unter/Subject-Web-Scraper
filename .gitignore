@@ -150,3 +150,11 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+.idea/.name
+EG3000.html
+EG3000_files/2.9983b08a.chunk.js.download
+EG3000_files/2.da8127bb.chunk.css
+EG3000_files/css
+/EG3000_files
+test.py
+undergraduate_subjects.py
