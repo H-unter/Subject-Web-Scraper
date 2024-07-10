@@ -4,27 +4,47 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import json
+import re
+import time
 
-PUNCTUATION = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
 
+PUNCTUATION = '''!()-[]{};:'",<>./?@#$%^&*_~'''
+BASE_URL = 'https://apps.jcu.edu.au/subjectsearch/#/subject/2024/'
+RESCRAPE_ALL_SUBJECTS = True
 
 def main():
-    base_url = 'https://apps.jcu.edu.au/subjectsearch/#/subject/2024/'
+    """Retrieve subject page htmls, parse them, store locally in subjects.json"""    
     parsed_data_path = 'subjects.json'
-    # try:
     subject_codes = read_subject_codes_from_file('cse_subject_codes.txt')
-    print(subject_codes)
     subject_data = read_json_file(parsed_data_path)
-    for subject_code in subject_codes:
-        if subject_code in subject_data.keys():
-            print(f'{subject_code} already in {parsed_data_path}')
-        else:
-            subject_url = ''.join([base_url, subject_code])
-            file_contents = fetch_html_file(subject_url)  # from url
-            print(f'Fetched file contents of {subject_code}')
-            subject_data = parse_subject_data(subject_data, file_contents)
-            print(f'Parsed file contents of {subject_code}')
-    write_to_json(subject_data, parsed_data_path)
+    
+    driver = webdriver.Chrome()  # Initialize the WebDriver once
+
+    try:
+        for subject_code in subject_codes:
+            if not subject_requires_rescraping(subject_code, subject_data):
+                print(f'{subject_code} already has new availability information.')
+            else:
+                subject_url = ''.join([BASE_URL, subject_code])
+                start_time = time.time()
+                file_contents = fetch_html_file(subject_url, driver)
+                elapsed_time = time.time() - start_time
+                print(f'Fetched file contents of {subject_code} from {subject_url}, took {elapsed_time:.2f} seconds')
+
+                parse_start_time = time.time()
+                subject_data = parse_subject_data(subject_data, file_contents)
+                parse_elapsed_time = time.time() - parse_start_time
+                print(f'Parsed file contents of {subject_code}, took {parse_elapsed_time:.2f} seconds')
+
+                write_start_time = time.time()
+                write_subject_to_json(subject_code, subject_data[subject_code], parsed_data_path)
+                write_elapsed_time = time.time() - write_start_time
+                print(f'Wrote data for {subject_code} to JSON, took {write_elapsed_time:.2f} seconds')
+
+    finally:
+        driver.quit()  # Ensure the WebDriver is closed
+            
+
 
 
 def read_json_file(file_path):
@@ -32,26 +52,79 @@ def read_json_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
 
-
 def read_subject_codes_from_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         subject_codes = file.read().splitlines()
     return subject_codes
 
+def subject_requires_rescraping(subject_code, subject_data):
+    """Determine if a subject requires a re-scrape of its data (data not complete or otherwise)"""
+    is_subject_present = subject_code in subject_data.keys() # has it already been scraped?
+    
+    try:
+        is_availabilities_present = 'availabilities' in subject_data[subject_code]
+        first_availability = subject_data[subject_code]['availabilities'][0]
+        is_subject_data_complete = is_subject_present and is_availabilities_present and ('study_period_dates' in first_availability)
+    except:  
+        is_subject_data_complete = False
+        print(f'{subject_code} does not have new availability information.')
+    finally:
+        subject_requires_rescraping = not is_subject_data_complete or RESCRAPE_ALL_SUBJECTS
+        return subject_requires_rescraping
 
-def fetch_html_file(url):
-    """Fetch html file from url"""
-    driver = webdriver.Chrome()  # Ensure chromedriver is in PATH or provide the path
+def fetch_html_file(url, driver):
+    """Fetch html file from url using an existing WebDriver instance"""
     try:
         driver.get(url)
-        WebDriverWait(driver, 10).until(
+
+        # Start timer for total time
+        total_start_time = time.time()
+
+        # Wait for the main element to load
+        main_load_start_time = time.time()
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "div.StyledBox-sc-13pk1d4-0.gpfScO"))
         )
+        main_load_end_time = time.time()
+        print(f"Main element loaded in {main_load_end_time - main_load_start_time:.2f} seconds")
+
+        # Scroll to the bottom to ensure all content is loaded
+        scroll_start_time = time.time()
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        while True:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(1)  # Reduced from 2 seconds to 1 second
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
+        scroll_end_time = time.time()
+        print(f"Scrolling completed in {scroll_end_time - scroll_start_time:.2f} seconds")
+
+        # Find and click all availability buttons
+        button_click_start_time = time.time()
+        buttons = driver.find_elements(By.CSS_SELECTOR, "button.StyledButton-sc-323bzc-0.evMQeP")
+        for button in buttons:
+            try:
+                driver.execute_script("arguments[0].scrollIntoView(true);", button)
+                time.sleep(0.5)  # Reduced from 1 second to 0.5 seconds
+                button.click()
+                time.sleep(0.5)  # Reduced from 1 second to 0.5 seconds
+            except Exception as e:
+                print(f"Error clicking button: {e}")
+        button_click_end_time = time.time()
+        print(f"Button clicking completed in {button_click_end_time - button_click_start_time:.2f} seconds")
+
+        # Get the page source
         html_content = driver.page_source
-        driver.quit()
+
+        total_end_time = time.time()
+        print(f"Total fetch_html_file execution time: {total_end_time - total_start_time:.2f} seconds")
+
     except Exception as exception:
         print(f"Error in fetching html content: {exception}")
     return html_content
+
 
 
 def read_local_html_file(file_path):
@@ -60,16 +133,22 @@ def read_local_html_file(file_path):
         return file.read()
 
 
-def write_to_json(data, filename):
-    """Write data to a JSON file"""
+def write_subject_to_json(subject_code, subject_data, filename):
+    """Write subject data to a JSON file"""
+
+    with open(filename, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    data[subject_code] = subject_data
+
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
 def parse_subject_data(subject_data, file_contents):
     """Parse key subject data and update the json file accordingly."""
-    code = extract_subject_code(page)
     page = BeautifulSoup(file_contents, 'html.parser')
+    code = extract_subject_code(page)
     college = extract_college(page)
     if not college:
         print('College not found')
@@ -165,9 +244,41 @@ def parse_assessment_item(li):
 
 
 def extract_availabilities(page):
-    """Extract the subject availabilities."""
-    availability_divs = page.find_all('div', class_='StyledBox-sc-13pk1d4-0 kcFExs')
-    return [clean_text(div.get_text(strip=True)) for div in availability_divs]
+    """Extract the subject availabilities with detailed information."""
+    availabilities = []
+    availability_divs = page.find_all('div', class_='StyledBox-sc-13pk1d4-0 gQMymQ')
+    
+    for div in availability_divs:
+        button = div.find('button', {'role': 'tab'})
+        if button and button.get('aria-expanded') == 'true':
+            availability = {}
+            availability['availability'] = clean_text(button.get_text(strip=True))
+            
+            details = div.find('div', {'aria-hidden': 'false'})
+            if details:
+                table = details.find('table')
+                if table:
+                    for tr in table.find_all('tr'):
+                        th = tr.find('th')
+                        td = tr.find('td') or tr.find('th', scope='col')
+                        if th and td:
+                            key = clean_text(th.get_text(strip=True).replace(':', '')).lower().replace(' ', '_')
+                            if key == "lecturer(s)":
+                                value = [lecturer.get_text(strip=True) for lecturer in td.find_all('div')]
+                            elif key == "coordinator(s)":
+                                value = [coordinator.get_text(strip=True) for coordinator in td.find_all('div')]
+                            else:
+                                value = clean_text(td.get_text(strip=True))
+                                if key == "workload_expectations":
+                                    value = re.sub(r'(\d+ Hours)', r' \1', value).replace(' - ', ' - ').replace('self-directed', ' self-directed')
+                                elif key == "study_period_dates":
+                                    value = value.replace('to', ' to ')
+                            availability[key] = value
+            availabilities.append(availability)
+    
+    return availabilities
+
+
 
 
 def clean_text(text):
