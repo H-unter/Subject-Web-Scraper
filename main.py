@@ -10,12 +10,12 @@ import time
 
 PUNCTUATION = '''!()-[]{};:'",<>./?@#$%^&*_~'''
 BASE_URL = 'https://apps.jcu.edu.au/subjectsearch/#/subject/2024/'
-RESCRAPE_ALL_SUBJECTS = True
+RESCRAPE_ALL_SUBJECTS = False
 
 def main():
     """Retrieve subject page htmls, parse them, store locally in subjects.json"""    
     parsed_data_path = 'subjects.json'
-    subject_codes = read_subject_codes_from_file('cse_subject_codes.txt')
+    subject_codes = read_subject_codes_from_file('subject_codes.txt')
     subject_data = read_json_file(parsed_data_path)
     
     driver = webdriver.Chrome()  # Initialize the WebDriver once
@@ -25,21 +25,24 @@ def main():
             if not subject_requires_rescraping(subject_code, subject_data):
                 print(f'{subject_code} already has new availability information.')
             else:
-                subject_url = ''.join([BASE_URL, subject_code])
-                start_time = time.time()
-                file_contents = fetch_html_file(subject_url, driver)
-                elapsed_time = time.time() - start_time
-                print(f'Fetched file contents of {subject_code} from {subject_url}, took {elapsed_time:.2f} seconds')
+                try:
+                    subject_url = ''.join([BASE_URL, subject_code])
+                    start_time = time.time()
+                    file_contents = fetch_html_file(subject_url, driver)
+                    elapsed_time = time.time() - start_time
+                    print(f'Fetched file contents of {subject_code} from {subject_url}, took {elapsed_time:.2f} seconds')
 
-                parse_start_time = time.time()
-                subject_data = parse_subject_data(subject_data, file_contents)
-                parse_elapsed_time = time.time() - parse_start_time
-                print(f'Parsed file contents of {subject_code}, took {parse_elapsed_time:.2f} seconds')
+                    parse_start_time = time.time()
+                    subject_data = parse_subject_data(subject_data, file_contents)
+                    parse_elapsed_time = time.time() - parse_start_time
+                    print(f'Parsed file contents of {subject_code}, took {parse_elapsed_time:.2f} seconds')
 
-                write_start_time = time.time()
-                write_subject_to_json(subject_code, subject_data[subject_code], parsed_data_path)
-                write_elapsed_time = time.time() - write_start_time
-                print(f'Wrote data for {subject_code} to JSON, took {write_elapsed_time:.2f} seconds')
+                    write_start_time = time.time()
+                    write_subject_to_json(subject_code, subject_data[subject_code], parsed_data_path)
+                    write_elapsed_time = time.time() - write_start_time
+                    print(f'Wrote data for {subject_code} to JSON, took {write_elapsed_time:.2f} seconds')
+                except:
+                    print(f'An error occoured for {subject_code}. Skipping.')
 
     finally:
         driver.quit()  # Ensure the WebDriver is closed
