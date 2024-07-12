@@ -9,8 +9,9 @@ import time
 
 
 PUNCTUATION = '''!()-[]{};:'",<>./?@#$%^&*_~'''
-BASE_URL = 'https://apps.jcu.edu.au/subjectsearch/#/subject/2024/'
-RESCRAPE_ALL_SUBJECTS = False
+BASE_URL = 'https://apps.jcu.edu.au/subjectsearch/#/subject/'
+YEAR = 2024
+RESCRAPE_ALL_SUBJECTS = False # change if you want to to a full rescrape of all the data
 
 def main():
     """Retrieve subject page htmls, parse them, store locally in subjects.json"""    
@@ -22,27 +23,29 @@ def main():
 
     try:
         for subject_code in subject_codes:
+            print(f'████████ {subject_code} ████████')
             if not subject_requires_rescraping(subject_code, subject_data):
-                print(f'{subject_code} already has new availability information.')
+                print(f'    {subject_code} already has new availability information. Skipping')
             else:
                 try:
-                    subject_url = ''.join([BASE_URL, subject_code])
-                    start_time = time.time()
+                    subject_url = f"{BASE_URL}{YEAR}/{subject_code}"
+                    fetch_start_time = time.time()
                     file_contents = fetch_html_file(subject_url, driver)
-                    elapsed_time = time.time() - start_time
-                    print(f'Fetched file contents of {subject_code} from {subject_url}, took {elapsed_time:.2f} seconds')
+                    fetch_elapsed_time = time.time() - fetch_start_time
+                    print(f'    Fetched file contents of {subject_code} from {subject_url}, took {fetch_elapsed_time:.2f} seconds')
 
                     parse_start_time = time.time()
                     subject_data = parse_subject_data(subject_data, file_contents)
                     parse_elapsed_time = time.time() - parse_start_time
-                    print(f'Parsed file contents of {subject_code}, took {parse_elapsed_time:.2f} seconds')
+                    print(f'    Parsed file contents of {subject_code}, took {parse_elapsed_time:.2f} seconds')
 
                     write_start_time = time.time()
                     write_subject_to_json(subject_code, subject_data[subject_code], parsed_data_path)
                     write_elapsed_time = time.time() - write_start_time
-                    print(f'Wrote data for {subject_code} to JSON, took {write_elapsed_time:.2f} seconds')
+                    print(f'    Wrote data for {subject_code} to JSON, took {write_elapsed_time:.2f} seconds')
                 except:
-                    print(f'An error occoured for {subject_code}. Skipping.')
+                    print(f'    An error occoured for {subject_code}. Skipping.')
+    
 
     finally:
         driver.quit()  # Ensure the WebDriver is closed
